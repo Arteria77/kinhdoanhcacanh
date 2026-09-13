@@ -15,6 +15,25 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    @php
+                        $isAdmin = auth()->check() && (optional(auth()->user())->role === 'admin' || optional(auth()->user())->is_admin == 1);
+                    @endphp
+
+                    @if($isAdmin)
+                        <!-- Thử ép hiện trực tiếp để kiểm tra xem có hiển thị không -->
+<x-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')">
+    📋 Quản lý đơn hàng (ÉP HIỆN)
+</x-nav-link>
+                    @else
+                        <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
+                            🛒 Giỏ hàng 
+                            @php $cartCount = session('cart') ? count(session('cart')) : 0; @endphp
+                            @if($cartCount > 0)
+                                <span class="ml-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">{{ $cartCount }}</span>
+                            @endif
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -70,6 +89,20 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            @if($isAdmin)
+                <x-responsive-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')">
+                    📋 Quản lý đơn hàng
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
+                    🛒 Giỏ hàng 
+                    @php $cartCount = session('cart') ? count(session('cart')) : 0; @endphp
+                    @if($cartCount > 0)
+                        <span class="ml-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">{{ $cartCount }}</span>
+                    @endif
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

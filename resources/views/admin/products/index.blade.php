@@ -10,6 +10,7 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-blue-600">🐠 Quản Lý Danh Sách Cá Cảnh</h1>
             <div class="space-x-4 flex items-center">
+                <a href="{{ route('admin.orders.index') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-semibold">📋 Quản lý đơn hàng</a>
                 <a href="{{ route('admin.users.index') }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm font-semibold">👥 Quản lý khách hàng</a>
                 <a href="/" class="text-gray-600 hover:underline">Trang chủ</a>
                 <a href="{{ route('admin.products.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-semibold">+ Thêm sản phẩm</a>

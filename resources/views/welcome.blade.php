@@ -38,6 +38,17 @@
 
             <!-- User Auth & Actions -->
             <div class="flex items-center space-x-4">
+                <!-- Nút Giỏ hàng -->
+                <a href="{{ route('cart.index') }}" class="relative text-slate-700 hover:text-blue-600 font-medium text-sm flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition">
+                    <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+                    @php $cartCount = session('cart') ? count(session('cart')) : 0; @endphp
+                    @if($cartCount > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
+                </a>
+
                 @auth
                     @if(Auth::user()->role === 'admin')
                         <a href="{{ route('admin.products.index') }}" class="bg-rose-50 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-rose-100 transition flex items-center gap-1">
@@ -125,9 +136,9 @@
                     <div class="p-5 pt-0">
                         <a href="{{ route('products.show', $product->id) }}" class="w-full block text-center bg-slate-900 text-white py-2.5 rounded-xl hover:bg-blue-600 transition font-semibold text-sm shadow-sm">
                             Xem thông tin sản phẩm
-                        </a>
-                    </div>
-                </div>
+                      </a>
+                  </div>
+            </div>
             @empty
                 <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
                     <i class="fa-solid fa-fish text-slate-300 text-5xl mb-3"></i>

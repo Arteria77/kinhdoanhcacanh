@@ -31,6 +31,34 @@
             <main>
                 {{ $slot }}
             </main>
+
+            <!-- Nút nổi cố định góc dưới bên phải (Tự đổi chức năng nếu là Admin) -->
+            @php
+                $isAdmin = auth()->check() && (optional(auth()->user())->role === 'admin' || optional(auth()->user())->is_admin == 1);
+            @endphp
+
+            @if($isAdmin)
+                <!-- Nút dành riêng cho Admin: Chuyển đến trang Quản lý đơn hàng -->
+                <a href="{{ route('admin.orders.index') }}" class="fixed bottom-6 right-6 bg-purple-600 hover:bg-purple-700 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-2xl z-50 transition duration-200 group" title="Quản lý đơn hàng">
+                    📋
+                    <span class="absolute -top-2 -right-2 bg-indigo-800 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap">
+                        Admin
+                    </span>
+                </a>
+            @else
+                <!-- Nút dành cho Khách hàng: Xem giỏ hàng -->
+                <a href="{{ route('cart.index') }}" class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-2xl z-50 transition duration-200 group" title="Xem giỏ hàng">
+                    🛒
+                    @php
+                        $cartCount = session('cart') ? count(session('cart')) : 0;
+                    @endphp
+                    @if($cartCount > 0)
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-md">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
+                </a>
+            @endif
         </div>
     </body>
 </html>
