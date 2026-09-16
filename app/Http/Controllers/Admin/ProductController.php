@@ -86,9 +86,13 @@ class ProductController extends Controller
     // Xóa sản phẩm
     public function destroy($id) {
         $product = Product::findOrFail($id);
+
+        $product->orderItems()->delete();
+
         if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }
+
         $product->delete();
 
         return redirect()->route('admin.products.index')->with('success', 'Xóa sản phẩm thành công!');

@@ -12,7 +12,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -29,7 +29,8 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                {{ $slot ?? '' }}
+                @yield('content')
             </main>
 
             <!-- Nút nổi cố định góc dưới bên phải (Tự đổi chức năng nếu là Admin) -->

@@ -1,8 +1,20 @@
-@extends('layouts.admin') {{-- Thay đổi layout admin tùy theo project của bạn --}}
-
-@section('content')
-<div class="container-fluid">
-    <h2 class="mb-4">Quản lý Đơn hàng</h2>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đơn hàng - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-blue-600">📋 Quản lý đơn hàng</h1>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.products.index') }}" class="text-gray-600 hover:underline">Quản lý sản phẩm</a>
+            <a href="/" class="text-gray-600 hover:underline">Trang chủ</a>
+        </div>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -88,4 +100,5 @@
         </div>
     </div>
 </div>
-@endsection
+</body>
+</html>

@@ -10,12 +10,20 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
-        'total_price', 
-        'status', 
-        'shipping_name', 
-        'shipping_phone', 
-        'shipping_address'
+        'user_id',
+        'total_price',
+        'status',
+        'shipping_name',
+        'shipping_phone',
+        'shipping_address',
+        'shipping_fee',
+        'to_district_id',
+        'to_ward_code',
+        'coupon_code',
+        'discount_amount',
+        'payment_method',
+        'payment_status',
+        'transaction_id',
     ];
 
     // Một đơn hàng thuộc về một người dùng

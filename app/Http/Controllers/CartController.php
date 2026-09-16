@@ -50,7 +50,7 @@ class CartController extends Controller
     // Trang thông báo thêm giỏ hàng thành công
     public function success()
     {
-        return view('cart.success');
+        return view('cart.success', ['order' => null]);
     }
 
     // Cập nhật số lượng sản phẩm trong giỏ

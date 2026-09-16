@@ -66,6 +66,7 @@
                                 <td class="p-4">
                                     <form action="{{ route('cart.update') }}" method="POST" class="flex items-center gap-2">
                                         @csrf
+                                        @method('PATCH')
                                         <input type="hidden" name="id" value="{{ $id }}">
                                         <input type="number" name="quantity" value="{{ $details['quantity'] }}" min="1" max="{{ $details['stock'] ?? 99 }}" class="w-16 bg-slate-100 border border-slate-200 rounded-lg px-2 py-1.5 text-center text-sm focus:outline-none focus:border-blue-500">
                                         <button type="submit" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition" title="Cập nhật">
