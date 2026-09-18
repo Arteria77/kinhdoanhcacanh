@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 @extends('layouts.admin')
 
 @section('title', 'Quản lý cá cảnh')
@@ -92,84 +91,19 @@
                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition">
                                     Xóa
                                 </button>
-=======
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Quản lý sản phẩm - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 text-gray-800">
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-blue-600">🐠 Quản Lý Danh Sách Cá Cảnh</h1>
-            <div class="space-x-4 flex items-center">
-                <a href="{{ route('admin.orders.index') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-semibold">📋 Quản lý đơn hàng</a>
-                <a href="{{ route('admin.coupons.index') }}" class="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 text-sm font-semibold">🎟️ Mã giảm giá đơn hàng</a>
-                <a href="{{ route('admin.users.index') }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm font-semibold">👥 Quản lý khách hàng</a>
-                <a href="/" class="text-gray-600 hover:underline">Trang chủ</a>
-                <a href="{{ route('admin.products.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-semibold">+ Thêm sản phẩm</a>
-            </div>
-        </div>
-
-        @if(session('success'))
-            <div class="mb-4 bg-green-100 text-green-700 p-3 rounded">{{ session('success') }}</div>
-        @endif
-
-        @if(session('error'))
-            <div class="mb-4 bg-red-100 text-red-700 p-3 rounded">{{ session('error') }}</div>
-        @endif
-
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-200 text-gray-700">
-                        <th class="p-3">Hình ảnh</th>
-                        <th class="p-3">Tên cá cảnh</th>
-                        <th class="p-3">Giá (VNĐ)</th>
-                        <th class="p-3">Tồn kho</th>
-                        <th class="p-3 text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($products as $product)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3">
-                            @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" class="w-12 h-12 object-cover rounded">
-                            @else
-                                <span class="text-gray-400 text-sm">Không có</span>
-                            @endif
-                        </td>
-                        <td class="p-3 font-semibold">{{ $product->name }}</td>
-                        <td class="p-3 text-blue-600 font-bold">{{ number_format($product->price) }} đ</td>
-                        <td class="p-3">{{ $product->stock }} con</td>
-                        <td class="p-3 text-center space-x-2">
-                            <a href="{{ route('admin.products.edit', $product->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600">Sửa</a>
-                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Xóa</button>
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                             </form>
                         </td>
                     </tr>
                     @empty
                     <tr>
-<<<<<<< HEAD
                         <td colspan="6" class="p-8 text-center text-slate-400">
                             Chưa có sản phẩm cá cảnh nào trong kho.
                         </td>
-=======
-                        <td colspan="5" class="p-4 text-center text-gray-500">Chưa có sản phẩm nào.</td>
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-<<<<<<< HEAD
 
         @if($products->hasPages())
         <div class="p-4 border-t border-slate-200">
@@ -179,11 +113,3 @@
     </div>
 </div>
 @endsection
-=======
-        <div class="mt-4">
-            {{ $products->links() }}
-        </div>
-    </div>
-</body>
-</html>
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d

@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< HEAD
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -12,17 +11,6 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
-=======
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\Admin\CouponController;
-use App\Http\Controllers\Admin\OrderAdminController;
-use App\Http\Controllers\CartController;
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 
 // Nhóm route quản lý giỏ hàng
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -40,7 +28,6 @@ Route::get('/api/ghn/provinces', [CartController::class, 'getProvinces']);
 Route::get('/api/ghn/districts', [CartController::class, 'getDistricts']);
 Route::get('/api/ghn/wards', [CartController::class, 'getWards']);
 
-<<<<<<< HEAD
 // Tuyến đường xác thực email
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
@@ -76,16 +63,11 @@ Route::post('/email/verification-notification', function (\Illuminate\Http\Reque
 
 // Route dành cho Khách hàng đã đăng nhập và xác thực email
 Route::middleware(['auth', 'verified'])->group(function () {
-=======
-// Route dành cho Khách hàng (cần đăng nhập)
-Route::middleware(['auth'])->group(function () {
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
 
-<<<<<<< HEAD
     // Trang thông báo đặt hàng thành công / thất bại
     Route::get('/checkout/success/{id}', [OrderController::class, 'success'])->name('checkout.success');
     Route::get('/checkout/failed', [OrderController::class, 'failed'])->name('checkout.failed');
@@ -131,39 +113,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/orders/{id}/create-ghn', [OrderAdminController::class, 'createGhnOrder'])->name('orders.createGhn');
 
     // 5. Mã giảm giá
-=======
-    // BỔ SUNG: Trang thông báo đặt hàng thành công / thất bại
-    Route::get('/checkout/success/{id}', [OrderController::class, 'success'])->name('checkout.success');
-    Route::get('/checkout/failed', [OrderController::class, 'failed'])->name('checkout.failed');
-
-    // BỔ SUNG: Route xử lý áp dụng và gỡ mã giảm giá
-    Route::post('/coupon/apply', [OrderController::class, 'applyCoupon'])->name('coupon.apply');
-    Route::post('/coupon/remove', [OrderController::class, 'removeCoupon'])->name('coupon.remove');
-});
-
-// BỔ SUNG: Route nhận kết quả trả về từ VNPay (Đặt ngoài nhóm auth vì VNPay chuyển hướng trực tiếp về đây)
-Route::get('/payment/vnpay-return', [OrderController::class, 'vnpayReturn'])->name('payment.vnpay.return');
-
-// Route dành cho Admin quản lý đơn hàng
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/orders', [OrderAdminController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{id}', [OrderAdminController::class, 'show'])->name('orders.show');
-    Route::patch('/orders/{id}/status', [OrderAdminController::class, 'updateStatus'])->name('orders.updateStatus');
-
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
     Route::get('/coupons/create', [CouponController::class, 'create'])->name('coupons.create');
     Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
     Route::get('/coupons/{coupon}/edit', [CouponController::class, 'edit'])->name('coupons.edit');
     Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update');
     Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy');
-<<<<<<< HEAD
 
     // 6. Quản lý khách hàng
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-=======
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 });
 
 // Trang chủ hiển thị danh sách sản phẩm
@@ -192,22 +151,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [AuthController::class, 'editProfile'])->name('profile.show');
     Route::get('/profile/edit', [AuthController::class, 'editProfile'])->name('profile.edit');
     Route::patch('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
-<<<<<<< HEAD
-=======
-});
-
-// Nhóm route quản lý dành riêng cho Admin (Sản phẩm & Khách hàng)
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Quản lý sản phẩm
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
-
-    // Quản lý khách hàng
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 });

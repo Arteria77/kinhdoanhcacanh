@@ -31,15 +31,10 @@ class AuthController extends Controller
             'role' => 'customer',
         ]);
 
-<<<<<<< HEAD
         event(new \Illuminate\Auth\Events\Registered($user));
 
         Auth::login($user);
         return redirect()->route('verification.notice')->with('success', 'Đăng ký thành công! Vui lòng kiểm tra email của bạn để xác thực tài khoản.');
-=======
-        Auth::login($user);
-        return redirect('/')->with('success', 'Đăng ký thành công!');
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     }
 
     // Hiển thị form đăng nhập

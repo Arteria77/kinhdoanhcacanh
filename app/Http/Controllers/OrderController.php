@@ -6,18 +6,12 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
-<<<<<<< HEAD
 use App\Services\GhnService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-=======
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 
 class OrderController extends Controller
 {
@@ -120,11 +114,7 @@ class OrderController extends Controller
             'to_district_id' => ['required', 'integer'],
             'to_ward_code' => ['required', 'string'],
             'shipping_fee' => ['required', 'numeric'],
-<<<<<<< HEAD
             'payment_method' => ['required', 'in:cod,vnpay,sepay'],
-=======
-            'payment_method' => ['required', 'in:cod,vnpay'],
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
         ]);
 
         $cart = session()->get('cart', []);
@@ -154,11 +144,8 @@ class OrderController extends Controller
                 'shipping_name' => $request->shipping_name,
                 'shipping_phone' => $request->shipping_phone,
                 'shipping_address' => $request->shipping_address,
-<<<<<<< HEAD
                 'to_district_id' => (int) $request->to_district_id,
                 'to_ward_code' => (string) $request->to_ward_code,
-=======
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                 'coupon_code' => $couponCode,
                 'discount_amount' => $discountAmount,
                 'payment_method' => $request->payment_method,
@@ -177,15 +164,11 @@ class OrderController extends Controller
                     throw new \Exception('Sản phẩm "' . $product->name . '" không đủ tồn kho.');
                 }
 
-<<<<<<< HEAD
                 // CHỈ TRỪ TỒN KHO NGAY NẾU LÀ ĐƠN COD (Vì đơn COD được xác nhận giao hàng ngay)
                 // ĐỐI VỚI VNPAY / SEPAY: PHẢI THANH TOÁN TIỀN THÀNH CÔNG MỚI TRỪ VÀO KHO
                 if ($request->payment_method === 'cod') {
                     $product->decrement('stock', $quantity);
                 }
-=======
-                $product->decrement('stock', $quantity);
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -208,7 +191,6 @@ class OrderController extends Controller
                 return $this->createVnpayUrl($order);
             }
 
-<<<<<<< HEAD
             if ($request->payment_method === 'sepay') {
                 return redirect()->route('payment.sepay', ['order_id' => $order->id]);
             }
@@ -221,8 +203,6 @@ class OrderController extends Controller
                     ->with('success', 'Đặt hàng COD thành công! Đơn hàng đã được tạo trên GHN và đang ở trạng thái chờ giao hàng (chưa thanh toán).');
             }
 
-=======
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
             return redirect()->route('checkout.success', ['id' => $order->id])->with('success', 'Đặt hàng thành công!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -308,7 +288,6 @@ class OrderController extends Controller
         }
 
         if (($request->vnp_ResponseCode ?? '') === '00') {
-<<<<<<< HEAD
             if ($order->payment_status !== 'paid') {
                 // Trừ tồn kho khi thanh toán tiền thành công
                 $this->deductStock($order);
@@ -322,13 +301,6 @@ class OrderController extends Controller
                 // Tự động tạo mã vận đơn GHN và chuyển trạng thái sang Chờ giao hàng
                 GhnService::createShippingOrder($order);
             }
-=======
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'processing',
-                'transaction_id' => $request->vnp_TransactionNo ?? null,
-            ]);
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 
             return redirect()->route('checkout.success', ['id' => $order->id])->with('success', 'Thanh toán qua VNPay thành công!');
         }
@@ -340,7 +312,6 @@ class OrderController extends Controller
 
         return redirect()->route('checkout.failed')->with('error', 'Giao dịch VNPay không thành công.');
     }
-<<<<<<< HEAD
 
     // Hiển thị trang thanh toán VietQR qua SePay
     public function sepayPayment($orderId)
@@ -498,6 +469,4 @@ class OrderController extends Controller
             Product::where('id', $item->product_id)->decrement('stock', $item->quantity);
         }
     }
-=======
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 }

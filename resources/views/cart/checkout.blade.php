@@ -140,7 +140,6 @@
                 <div class="space-y-2 pt-2">
                     <label class="block text-sm font-semibold mb-1">Phương thức thanh toán</label>
                     <div class="space-y-2">
-<<<<<<< HEAD
                         <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50/40 transition">
                             <input type="radio" name="payment_method" value="cod" {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }} class="text-blue-600 focus:ring-blue-500">
                             <span class="text-sm font-medium text-slate-800">Thanh toán khi nhận hàng (COD)</span>
@@ -161,15 +160,6 @@
                         <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50/40 transition">
                             <input type="radio" name="payment_method" value="vnpay" {{ old('payment_method') === 'vnpay' ? 'checked' : '' }} class="text-blue-600 focus:ring-blue-500">
                             <span class="text-sm font-medium text-slate-800">Thanh toán qua Ví / Cổng VNPAY</span>
-=======
-                        <label class="flex items-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition">
-                            <input type="radio" name="payment_method" value="cod" {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }} class="text-blue-600 focus:ring-blue-500">
-                            <span class="text-sm font-medium">Thanh toán khi nhận hàng (COD)</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition">
-                            <input type="radio" name="payment_method" value="vnpay" {{ old('payment_method') === 'vnpay' ? 'checked' : '' }} class="text-blue-600 focus:ring-blue-500">
-                            <span class="text-sm font-medium">Thanh toán qua VNPAY</span>
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                         </label>
                     </div>
                 </div>

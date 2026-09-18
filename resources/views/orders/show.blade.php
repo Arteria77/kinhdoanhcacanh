@@ -50,7 +50,6 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Phương thức</span>
-<<<<<<< HEAD
                     <span class="font-semibold text-slate-800 uppercase">
                         {{ $order->payment_method === 'sepay' ? 'Chuyển khoản SePay' : $order->payment_method }}
                     </span>
@@ -60,9 +59,6 @@
                     <span class="font-semibold {{ $order->payment_status === 'paid' ? 'text-emerald-600' : 'text-amber-600' }}">
                         {{ $order->payment_status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán' }}
                     </span>
-=======
-                    <span class="font-semibold text-slate-800 uppercase">{{ $order->payment_method }}</span>
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Trạng thái</span>
@@ -79,7 +75,6 @@
                 </div>
             </div>
 
-<<<<<<< HEAD
             @if($order->payment_method === 'sepay' && $order->payment_status !== 'paid')
                 <div class="mt-4">
                     <a href="{{ route('payment.sepay', ['order_id' => $order->id]) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-xs shadow-md">
@@ -88,8 +83,6 @@
                 </div>
             @endif
 
-=======
->>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
             <div class="mt-6 border-t border-slate-200 pt-4 space-y-2 text-sm">
                 <div class="flex justify-between">
                     <span class="text-slate-500">Tạm tính</span>
