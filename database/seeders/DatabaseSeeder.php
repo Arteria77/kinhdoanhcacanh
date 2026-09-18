@@ -20,7 +20,10 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('12345678'), // Mật khẩu của admin
             'phone' => '0900000000',
             'role' => 'admin', // Gán quyền admin tại đây
+<<<<<<< HEAD
             'email_verified_at' => now(),
+=======
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
         ]);
     }
 }

@@ -18,6 +18,7 @@ class CartController extends Controller
     // Thêm sản phẩm vào giỏ hàng
     public function add(Request $request, $id)
     {
+<<<<<<< HEAD
         // 1. Bắt buộc đăng nhập trước khi thêm giỏ hàng
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập tài khoản để thêm sản phẩm vào giỏ hàng.');
@@ -28,6 +29,8 @@ class CartController extends Controller
             return redirect()->route('verification.notice')->with('error', 'Bạn cần xác thực địa chỉ email trước khi có thể thêm sản phẩm vào giỏ hàng.');
         }
 
+=======
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
@@ -114,15 +117,24 @@ class CartController extends Controller
         }
 
         try {
+<<<<<<< HEAD
             $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
             $shopId = (int) config('services.ghn.shop_id', 217505);
             $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
+=======
+            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
+            $shopId = 217497;
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Token' => $token,
                 'ShopId' => $shopId,
+<<<<<<< HEAD
             ])->post($apiUrl . '/v2/shipping-order/fee', $payload);
+=======
+            ])->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', $payload);
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -152,12 +164,20 @@ class CartController extends Controller
     public function getProvinces()
     {
         try {
+<<<<<<< HEAD
             $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
             $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
 
             $response = Http::withHeaders([
                 'Token' => $token
             ])->get($apiUrl . '/master-data/province');
+=======
+            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
+
+            $response = Http::withHeaders([
+                'Token' => $token
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province');
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 
             return response()->json($response->json());
         } catch (\Exception $e) {
@@ -169,12 +189,20 @@ class CartController extends Controller
     public function getDistricts(Request $request)
     {
         try {
+<<<<<<< HEAD
             $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
             $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
 
             $response = Http::withHeaders([
                 'Token' => $token
             ])->get($apiUrl . '/master-data/district', [
+=======
+            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
+
+            $response = Http::withHeaders([
+                'Token' => $token
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district', [
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                 'province_id' => (int) $request->province_id
             ]);
 
@@ -188,12 +216,20 @@ class CartController extends Controller
     public function getWards(Request $request)
     {
         try {
+<<<<<<< HEAD
             $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
             $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
 
             $response = Http::withHeaders([
                 'Token' => $token
             ])->get($apiUrl . '/master-data/ward', [
+=======
+            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
+
+            $response = Http::withHeaders([
+                'Token' => $token
+            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward', [
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                 'district_id' => (int) $request->district_id
             ]);
 

@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+<<<<<<< HEAD
         \Illuminate\Auth\Notifications\VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new \Illuminate\Notifications\Messages\MailMessage)
                 ->subject('Xác Thực Tài Khoản - Fashu Shop Cá Cảnh')
@@ -30,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
                 ->line('Liên kết này có hiệu lực trong vòng 60 phút. Nếu bạn không tạo tài khoản, xin vui lòng bỏ qua thư này.')
                 ->salutation('Trân trọng, Đội ngũ Fashu Aqua');
         });
+=======
+        //
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     }
 }

@@ -51,8 +51,13 @@
 
                 @auth
                     @if(Auth::user()->role === 'admin')
+<<<<<<< HEAD
                         <a href="{{ route('admin.dashboard') }}" class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-100 transition flex items-center gap-1.5 shadow-2xs">
                             <i class="fa-solid fa-gauge-high"></i> Quản trị
+=======
+                        <a href="{{ route('admin.products.index') }}" class="bg-rose-50 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-rose-100 transition flex items-center gap-1">
+                            <i class="fa-solid fa-gear"></i> Quản lý
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                         </a>
                     @endif
                     <a href="{{ route('profile.show') }}" class="text-slate-700 hover:text-blue-600 font-medium text-sm flex items-center gap-1">
@@ -70,6 +75,7 @@
         </div>
     </header>
 
+<<<<<<< HEAD
     @auth
         @if(!Auth::user()->hasVerifiedEmail())
             <div class="bg-amber-500 text-white px-4 py-2.5 text-sm font-medium shadow-sm">
@@ -109,6 +115,8 @@
         @endif
     </div>
 
+=======
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     <!-- Hero Banner -->
     <section class="max-w-7xl mx-auto px-4 my-6">
         <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 rounded-2xl p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between shadow-xl">
@@ -144,6 +152,7 @@
             @endif
         </div>
         
+<<<<<<< HEAD
         <!-- Danh mục các loài cá cảnh -->
         @if(isset($categories) && $categories->count() > 0)
         <div class="mb-8">
@@ -169,6 +178,8 @@
         </div>
         @endif
         
+=======
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @forelse($products as $product)
                 <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden flex flex-col justify-between border border-slate-100 group">
@@ -189,11 +200,14 @@
 
                         <!-- Thông tin sản phẩm -->
                         <div class="p-5">
+<<<<<<< HEAD
                             @if($product->category)
                                 <span class="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200 mb-1.5">
                                     {{ $product->category->name }}
                                 </span>
                             @endif
+=======
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
                             <h3 class="font-bold text-slate-800 text-base mb-2 line-clamp-1 group-hover:text-blue-600 transition">{{ $product->name }}</h3>
                             <div class="text-rose-600 font-black text-lg mb-4">
                                 {{ number_format($product->price) }} <span class="text-xs font-semibold">đ</span>

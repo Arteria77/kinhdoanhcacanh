@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+<<<<<<< HEAD
 use App\Models\Order;
 use App\Services\GhnService;
 use Illuminate\Http\Request;
@@ -31,10 +32,23 @@ class OrderAdminController extends Controller
         }
 
         // 2. Lọc theo trạng thái đơn hàng
+=======
+use Illuminate\Http\Request;
+use App\Models\Order;
+
+class OrderAdminController extends Controller
+{
+    // Hiển thị danh sách tất cả đơn hàng cho admin (có lọc trạng thái và phân trang)
+    public function index(Request $request)
+    {
+        $query = Order::with('user')->latest();
+
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+<<<<<<< HEAD
         // 3. Lọc theo trạng thái thanh toán
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
@@ -61,22 +75,35 @@ class OrderAdminController extends Controller
         ];
 
         return view('admin.orders.index', compact('orders', 'stats'));
+=======
+        $orders = $query->paginate(10);
+
+        return view('admin.orders.index', compact('orders'));
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     }
 
     // Xem chi tiết một đơn hàng bất kỳ của khách (phía admin)
     public function show($id)
     {
         $order = Order::with(['user', 'orderItems.product'])->findOrFail($id);
+<<<<<<< HEAD
         $trackingUrl = GhnService::getTrackingUrl($order->ghn_order_code);
 
         return view('admin.orders.show', compact('order', 'trackingUrl'));
     }
 
     // Cập nhật trạng thái đơn hàng (Chờ xử lý, Đang xử lý, Chờ giao hàng, Hoàn thành, Đã hủy)
+=======
+        return view('admin.orders.show', compact('order'));
+    }
+
+    // Cập nhật trạng thái đơn hàng (Đang xử lý, Đang giao, Đã giao, Hủy...)
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:pending,processing,shipping,completed,cancelled',
+<<<<<<< HEAD
             'payment_status' => 'nullable|in:pending,paid,failed',
         ]);
 
@@ -121,5 +148,14 @@ class OrderAdminController extends Controller
         }
 
         return redirect()->back()->with('error', $result['message']);
+=======
+        ]);
+
+        $order = Order::findOrFail($id);
+        $order->status = $request->status;
+        $order->save();
+
+        return redirect()->back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
     }
 }

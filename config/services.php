@@ -42,6 +42,7 @@ return [
         'return_url' => env('VNPAY_RETURN_URL', '/payment/vnpay-return'),
     ],
 
+<<<<<<< HEAD
     'ghn' => [
         'token' => env('GHN_TOKEN', 'eea1eb4a-aa85-11f1-a973-aee5264794df'),
         'shop_id' => env('GHN_SHOP_ID', 217505),
@@ -55,4 +56,6 @@ return [
         'account_name' => env('SEPAY_ACCOUNT_NAME', 'HOANG NGOC THI'),
     ],
 
+=======
+>>>>>>> c6ed5794fe53a6119504cc04070106a5146bd45d
 ];
