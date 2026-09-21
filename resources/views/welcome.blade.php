@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Fashu - Thế Giới Cá Cảnh & Thủy Sinh</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -242,6 +243,251 @@
             &copy; 2026 Fashu. All rights reserved. Designed with Laravel & Tailwind CSS.
         </div>
     </footer>
+
+    @auth
+        @if(Auth::user()->role === 'admin')
+            <div id="home-admin-chat-box" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
+                <button id="home-admin-chat-toggle" type="button" style="background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 30px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    💬 Hỗ trợ Khách hàng
+                </button>
+
+                <div id="home-admin-chat-popup" style="display: none; width: 520px; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; position: absolute; bottom: 65px; left: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.15); overflow: hidden;">
+                    <div style="background: #0f172a; color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <strong style="font-size: 14px;">Trung tâm Tư vấn & Hỗ trợ Khách hàng</strong>
+                        <button id="home-admin-chat-close" type="button" style="background: #334155; color: #fff; border: none; width: 24px; height: 24px; cursor: pointer; font-weight: bold; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</button>
+                    </div>
+                    <div style="display: flex; height: 340px;">
+                        <div id="home-admin-user-list" style="width: 38%; border-right: 1px solid #e2e8f0; overflow-y: auto; background: #f8fafc;">
+                            <div style="padding: 12px; font-size: 12px; color: #64748b; text-align: center;">Đang tải danh sách...</div>
+                        </div>
+                        <div style="width: 62%; display: flex; flex-direction: column;">
+                            <div id="home-admin-chat-messages" style="flex-grow: 1; padding: 12px; overflow-y: auto; background: #fff; font-size: 13px;">
+                                <div style="text-align: center; margin-top: 100px; color: #94a3b8;"><small>Chọn khách hàng bên trái để bắt đầu chat</small></div>
+                            </div>
+                            <div style="padding: 10px; border-top: 1px solid #e2e8f0; display: flex; background: #f8fafc;">
+                                <input type="text" id="home-admin-chat-input" placeholder="Nhập câu trả lời..." style="flex-grow: 1; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none;">
+                                <button id="home-admin-send-btn" type="button" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; margin-left: 6px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">Gửi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                let currentUserId = null;
+                const homeAdminChatPopup = document.getElementById("home-admin-chat-popup");
+                const homeAdminChatMessages = document.getElementById("home-admin-chat-messages");
+                const homeAdminChatInput = document.getElementById("home-admin-chat-input");
+                const homeAdminSendBtn = document.getElementById("home-admin-send-btn");
+
+                function updateAdminSendState() {
+                    const hasSelection = !!currentUserId;
+                    homeAdminChatInput.disabled = !hasSelection;
+                    homeAdminSendBtn.disabled = !hasSelection;
+                    homeAdminChatInput.placeholder = hasSelection ? 'Nhập câu trả lời...' : 'Chọn khách hàng trước để chat';
+                }
+
+                document.getElementById("home-admin-chat-toggle").onclick = () => {
+                    homeAdminChatPopup.style.display = "block";
+                    updateAdminSendState();
+                    loadUsers();
+                };
+                document.getElementById("home-admin-chat-close").onclick = () => {
+                    homeAdminChatPopup.style.display = "none";
+                };
+
+                function loadUsers() {
+                    fetch("{{ route('admin.chat.users') }}")
+                        .then(res => res.json())
+                        .then(users => {
+                            let html = "";
+                            users.forEach(user => {
+                                let activeClass = (currentUserId == user.id) ? 'background: #2563eb; color: #fff;' : '';
+                                html += `<div class="user-item" style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 13px; font-weight: 500; transition: background 0.2s; ${activeClass}" onclick="selectUser(${user.id}, this)">${user.name}</div>`;
+                            });
+                            document.getElementById("home-admin-user-list").innerHTML = html || '<div style="padding: 12px; color: #94a3b8; text-align: center; font-size: 12px;"><small>Chưa có hội thoại nào</small></div>';
+                            updateAdminSendState();
+                        });
+                }
+
+                function selectUser(userId, element) {
+                    currentUserId = userId;
+                    document.querySelectorAll('.user-item').forEach(el => { el.style.background = ''; el.style.color = ''; });
+                    element.style.background = '#2563eb';
+                    element.style.color = '#fff';
+                    updateAdminSendState();
+                    loadMessages();
+                }
+
+                function loadMessages() {
+                    if (!currentUserId) return;
+                    fetch(`/admin/chat/messages/${currentUserId}`)
+                        .then(res => res.json())
+                        .then(messages => {
+                            let html = "";
+                            messages.forEach(msg => {
+                                let senderName = msg.sender_id == "{{ Auth::id() }}" ? "Bạn" : (msg.sender ? msg.sender.name : 'Khách');
+                                let isMe = msg.sender_id == "{{ Auth::id() }}";
+                                html += `<div style="margin-bottom: 8px; text-align: ${isMe ? 'right' : 'left'};">
+                                    <div style="display: inline-block; padding: 6px 10px; border-radius: 8px; background: ${isMe ? '#dbeafe' : '#f1f5f9'}; color: ${isMe ? '#1e40af' : '#334155'}; text-align: left; max-width: 85%; word-break: break-word;">
+                                        <strong>${senderName}:</strong> ${msg.content}
+                                    </div>
+                                </div>`;
+                            });
+                            homeAdminChatMessages.innerHTML = html;
+                            homeAdminChatMessages.scrollTop = homeAdminChatMessages.scrollHeight;
+                        });
+                }
+
+                function sendMessage() {
+                    let message = homeAdminChatInput.value.trim();
+                    if (!message) {
+                        homeAdminChatInput.focus();
+                        return;
+                    }
+                    if (!currentUserId) {
+                        homeAdminChatInput.placeholder = 'Chọn khách hàng trước để chat';
+                        homeAdminChatInput.focus();
+                        return;
+                    }
+
+                    fetch("{{ route('admin.chat.send') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ message: message, user_id: currentUserId })
+                    })
+                        .then(res => res.json())
+                        .then(() => {
+                            homeAdminChatInput.value = "";
+                            loadMessages();
+                        })
+                        .catch(() => {
+                            homeAdminChatInput.value = "";
+                            homeAdminChatInput.placeholder = 'Không thể gửi. Thử lại.';
+                        });
+                }
+
+                homeAdminSendBtn.onclick = sendMessage;
+                homeAdminChatInput.onkeypress = (e) => { if (e.key === 'Enter' && currentUserId) sendMessage(); };
+                updateAdminSendState();
+
+                setInterval(() => {
+                    if (homeAdminChatPopup && homeAdminChatPopup.style.display === "block") {
+                        loadMessages();
+                        loadUsers();
+                    }
+                }, 3000);
+            </script>
+        @else
+            <div id="home-user-chat-box" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
+                <button id="home-user-chat-toggle" type="button" style="background: #007bff; color: #fff; width: 55px; height: 55px; border-radius: 50%; border: none; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">💬</button>
+
+                <div id="home-user-chat-popup" style="display: none; width: 300px; background: #fff; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: absolute; bottom: 65px; left: 0; overflow: hidden;">
+                    <div style="background: #007bff; color: #fff; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: bold; font-size: 14px;">Hỗ trợ khách hàng</span>
+                        <button id="home-user-chat-close" type="button" style="background: transparent; border: none; color: #fff; font-weight: bold; cursor: pointer; font-size: 16px;">×</button>
+                    </div>
+                    <div id="home-user-chat-messages" style="height: 240px; overflow-y: auto; padding: 10px; background: #fdfdfd; font-size: 13px;">
+                        <small style="color: #666;">Đang tải lịch sử...</small>
+                    </div>
+                    <div style="padding: 8px; border-top: 1px solid #ddd; background: #fff; display: flex;">
+                        <input type="text" id="home-user-chat-input" placeholder="Nhập tin nhắn..." autocomplete="off" style="flex-grow: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; outline: none;">
+                        <button id="home-user-send-btn" type="button" style="background: #28a745; color: #fff; border: none; padding: 6px 12px; margin-left: 5px; border-radius: 4px; cursor: pointer; font-size: 12px;">Gửi</button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const toggleBtn = document.getElementById("home-user-chat-toggle");
+                    const chatPopup = document.getElementById("home-user-chat-popup");
+                    const closeBtn = document.getElementById("home-user-chat-close");
+                    const sendBtn = document.getElementById("home-user-send-btn");
+                    const input = document.getElementById("home-user-chat-input");
+                    const chatBox = document.getElementById("home-user-chat-messages");
+
+                    if (!toggleBtn) return;
+
+                    toggleBtn.onclick = () => {
+                        chatPopup.style.display = "block";
+                        toggleBtn.style.display = "none";
+                        loadMessages();
+                    };
+                    closeBtn.onclick = () => {
+                        chatPopup.style.display = "none";
+                        toggleBtn.style.display = "flex";
+                    };
+
+                    function loadMessages() {
+                        fetch("{{ route('user.chat.messages') }}")
+                            .then(res => res.json())
+                            .then(messages => {
+                                let html = "";
+                                if(messages.length === 0) {
+                                    html = "<div style='text-align: center; color: #888; margin-top: 70px;'><small>Bắt đầu cuộc trò chuyện với Admin</small></div>";
+                                }
+                                messages.forEach(msg => {
+                                    const isMe = msg.sender_id == "{{ Auth::id() }}";
+                                    html += `
+                                    <div style="margin-bottom: 8px; text-align: ${isMe ? 'right' : 'left'};">
+                                        <div style="display: inline-block; padding: 6px 10px; border-radius: 8px; background: ${isMe ? '#dcf8c6' : '#f1f0f0'}; text-align: left; max-width: 85%; word-break: break-word;">
+                                            <strong>${isMe ? 'Bạn' : 'Admin'}:</strong> ${msg.content}
+                                        </div>
+                                    </div>
+                                    `;
+                                });
+                                chatBox.innerHTML = html;
+                                chatBox.scrollTop = chatBox.scrollHeight;
+                            });
+                    }
+
+                    function sendMessage() {
+                        let message = input.value.trim();
+                        if (message === "") return;
+
+                        input.disabled = true;
+                        sendBtn.disabled = true;
+
+                        fetch("{{ route('user.chat.send') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                "Content-Type": "application/json",
+                                "Accept": "application/json"
+                            },
+                            body: JSON.stringify({ message: message })
+                        })
+                            .then(res => res.json())
+                            .then(() => {
+                                input.value = "";
+                                input.disabled = false;
+                                sendBtn.disabled = false;
+                                input.focus();
+                                loadMessages();
+                            })
+                            .catch(() => {
+                                input.disabled = false;
+                                sendBtn.disabled = false;
+                            });
+                    }
+
+                    sendBtn.onclick = sendMessage;
+                    input.addEventListener("keypress", function(e) {
+                        if (e.key === "Enter") { sendMessage(); }
+                    });
+
+                    setInterval(() => {
+                        if (chatPopup && chatPopup.style.display === "block") {
+                            loadMessages();
+                        }
+                    }, 3000);
+                });
+            </script>
+        @endif
+    @endauth
 
 </body>
 </html>

@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ChatController as AdminChatController; // Thêm Controller chat Admin
+use App\Http\Controllers\User\ChatController as UserChatController;   // Thêm Controller chat User
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
@@ -80,6 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Tuyến đường thanh toán và kiểm tra trạng thái SePay
     Route::get('/payment/sepay/{order_id}', [OrderController::class, 'sepayPayment'])->name('payment.sepay');
     Route::get('/payment/sepay/check-status/{order_id}', [OrderController::class, 'checkSepayStatus'])->name('payment.sepay.check');
+
+    // --- Bổ sung Route Live Chat cho User ---
+    Route::post('/chat/send', [UserChatController::class, 'send'])->name('user.chat.send');
+    Route::get('/chat/messages', [UserChatController::class, 'getMessages'])->name('user.chat.messages');
 });
 
 // Route nhận kết quả trả về từ VNPay
@@ -124,6 +130,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // 6. Quản lý khách hàng
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    // --- Bổ sung Route Live Chat cho Admin (Đã khớp chuẩn tên gọi) ---
+    Route::get('/chat/users', [AdminChatController::class, 'getUsers'])->name('chat.users');
+    Route::get('/chat/messages/{userId}', [AdminChatController::class, 'getMessages'])->name('chat.messages');
+    Route::post('/chat/send', [AdminChatController::class, 'send'])->name('chat.send');
 });
 
 // Trang chủ hiển thị danh sách sản phẩm
