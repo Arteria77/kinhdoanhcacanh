@@ -19,14 +19,14 @@ class OrderAdminController extends Controller
             $keyword = trim($request->keyword);
             $query->where(function ($q) use ($keyword) {
                 $q->where('id', 'like', "%{$keyword}%")
-                  ->orWhere('shipping_name', 'like', "%{$keyword}%")
-                  ->orWhere('shipping_phone', 'like', "%{$keyword}%")
-                  ->orWhere('ghn_order_code', 'like', "%{$keyword}%")
-                  ->orWhereHas('user', function ($uq) use ($keyword) {
-                      $uq->where('name', 'like', "%{$keyword}%")
-                         ->orWhere('email', 'like', "%{$keyword}%")
-                         ->orWhere('phone', 'like', "%{$keyword}%");
-                  });
+                    ->orWhere('shipping_name', 'like', "%{$keyword}%")
+                    ->orWhere('shipping_phone', 'like', "%{$keyword}%")
+                    ->orWhere('ghn_order_code', 'like', "%{$keyword}%")
+                    ->orWhereHas('user', function ($uq) use ($keyword) {
+                        $uq->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('email', 'like', "%{$keyword}%")
+                            ->orWhere('phone', 'like', "%{$keyword}%");
+                    });
             });
         }
 

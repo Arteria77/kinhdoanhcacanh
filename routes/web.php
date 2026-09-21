@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Nhóm route quản lý giỏ hàng
@@ -36,21 +37,21 @@ Route::get('/email/verify', function () {
 Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, $id, $hash) {
     $user = \App\Models\User::findOrFail($id);
 
-    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
         abort(403, 'Liên kết xác thực không hợp lệ.');
     }
 
-    if (! $request->hasValidSignature()) {
+    if (!$request->hasValidSignature()) {
         abort(403, 'Liên kết xác thực đã hết hạn hoặc không hợp lệ.');
     }
 
-    if (! $user->hasVerifiedEmail()) {
+    if (!$user->hasVerifiedEmail()) {
         $user->markEmailAsVerified();
         event(new \Illuminate\Auth\Events\Verified($user));
     }
 
-    if (! auth()->check()) {
-        auth()->login($user);
+    if (!Auth::check()) {
+        Auth::login($user);
     }
 
     return redirect('/')->with('success', 'Xác thực tài khoản email thành công! Bây giờ bạn đã có thể thoải mái thêm sản phẩm vào giỏ hàng và đặt mua hàng.');
@@ -127,7 +128,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 // Trang chủ hiển thị danh sách sản phẩm
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/dashboard', function () { return redirect('/'); })->name('dashboard');
+Route::get('/dashboard', function () {
+    return redirect('/');
+})->name('dashboard');
 
 // Trang tìm kiếm sản phẩm
 Route::get('/search', [HomeController::class, 'search'])->name('shop.search');
@@ -139,7 +142,7 @@ Route::get('/products/{id}', [HomeController::class, 'show'])->name('products.sh
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.store');
-    
+
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.store');
 });

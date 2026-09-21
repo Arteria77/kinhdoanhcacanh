@@ -32,7 +32,7 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
 
         $quantity = (int) $request->input('quantity', 1);
-        
+
         $currentCartQuantity = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
         $totalRequested = $currentCartQuantity + $quantity;
 
@@ -53,7 +53,7 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
-        
+
         return redirect()->route('cart.success');
     }
 
@@ -68,16 +68,16 @@ class CartController extends Controller
     {
         if ($request->id && $request->quantity) {
             $cart = session()->get('cart', []);
-            if(isset($cart[$request->id])) {
+            if (isset($cart[$request->id])) {
                 $product = Product::find($request->id);
-                if($product && $request->quantity > $product->stock) {
+                if ($product && $request->quantity > $product->stock) {
                     return redirect()->back()->with('error', 'Số lượng vượt quá tồn kho cho phép (' . $product->stock . ').');
                 }
-                
+
                 $cart[$request->id]['quantity'] = $request->quantity;
                 session()->put('cart', $cart);
             }
-            
+
             return redirect()->back()->with('success', 'Cập nhật giỏ hàng thành công!');
         }
     }
@@ -91,7 +91,7 @@ class CartController extends Controller
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
             }
-            
+
             return redirect()->back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
         }
     }
@@ -175,8 +175,8 @@ class CartController extends Controller
             $response = Http::withHeaders([
                 'Token' => $token
             ])->get($apiUrl . '/master-data/district', [
-                'province_id' => (int) $request->province_id
-            ]);
+                        'province_id' => (int) $request->province_id
+                    ]);
 
             return response()->json($response->json());
         } catch (\Exception $e) {
@@ -194,8 +194,8 @@ class CartController extends Controller
             $response = Http::withHeaders([
                 'Token' => $token
             ])->get($apiUrl . '/master-data/ward', [
-                'district_id' => (int) $request->district_id
-            ]);
+                        'district_id' => (int) $request->district_id
+                    ]);
 
             return response()->json($response->json());
         } catch (\Exception $e) {

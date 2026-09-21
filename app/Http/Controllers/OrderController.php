@@ -70,7 +70,7 @@ class OrderController extends Controller
 
         $coupon = Coupon::whereRaw('LOWER(code) = ?', [strtolower(trim($request->code))])->first();
 
-        if (! $coupon) {
+        if (!$coupon) {
             return back()->withInput()->with('error', 'Mã giảm giá không tồn tại.');
         }
 
@@ -283,7 +283,7 @@ class OrderController extends Controller
         }
 
         $order = Order::find($request->vnp_TxnRef);
-        if (! $order) {
+        if (!$order) {
             return redirect()->route('checkout.failed')->with('error', 'Không tìm thấy đơn hàng.');
         }
 
@@ -368,8 +368,8 @@ class OrderController extends Controller
                     'Authorization' => 'Bearer ' . $apiToken,
                     'Content-Type' => 'application/json',
                 ])->timeout(5)->get('https://my.sepay.vn/userapi/transactions/list', [
-                    'limit' => 20
-                ]);
+                            'limit' => 20
+                        ]);
 
                 if ($response->successful()) {
                     $transactions = $response->json('transactions') ?? [];
