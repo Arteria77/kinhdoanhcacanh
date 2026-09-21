@@ -42,4 +42,17 @@ return [
         'return_url' => env('VNPAY_RETURN_URL', '/payment/vnpay-return'),
     ],
 
+    'ghn' => [
+        'token' => env('GHN_TOKEN', 'eea1eb4a-aa85-11f1-a973-aee5264794df'),
+        'shop_id' => env('GHN_SHOP_ID', 217505),
+        'api_url' => env('GHN_API_URL', 'https://dev-online-gateway.ghn.vn/shiip/public-api'),
+    ],
+
+    'sepay' => [
+        'api_token' => env('SEPAY_API_TOKEN', '2ZABJEF6XREZPY7VT5QNN0BQGCCEUIVGZIMFGMCWMSOYUOF7SIXWH89YETJ5NPYL'),
+        'bank_brand' => env('SEPAY_BANK_BRAND', 'TPBank'),
+        'account_number' => env('SEPAY_ACCOUNT_NUMBER', '12325072005'),
+        'account_name' => env('SEPAY_ACCOUNT_NAME', 'HOANG NGOC THI'),
+    ],
+
 ];

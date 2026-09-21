@@ -10,12 +10,14 @@ use App\Models\User;
 class AuthController extends Controller
 {
     // Hiển thị form đăng ký
-    public function showRegister() {
+    public function showRegister()
+    {
         return view('auth.register');
     }
 
     // Xử lý đăng ký
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -31,17 +33,21 @@ class AuthController extends Controller
             'role' => 'customer',
         ]);
 
+        event(new \Illuminate\Auth\Events\Registered($user));
+
         Auth::login($user);
-        return redirect('/')->with('success', 'Đăng ký thành công!');
+        return redirect()->route('verification.notice')->with('success', 'Đăng ký thành công! Vui lòng kiểm tra email của bạn để xác thực tài khoản.');
     }
 
     // Hiển thị form đăng nhập
-    public function showLogin() {
+    public function showLogin()
+    {
         return view('auth.login');
     }
 
     // Xử lý đăng nhập
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -58,7 +64,8 @@ class AuthController extends Controller
     }
 
     // Đăng xuất
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -66,12 +73,14 @@ class AuthController extends Controller
     }
 
     // Hiển thị trang chỉnh sửa thông tin cá nhân
-    public function editProfile() {
+    public function editProfile()
+    {
         return view('profile.edit', ['user' => Auth::user()]);
     }
 
     // Cập nhật thông tin cá nhân
-    public function updateProfile(Request $request) {
+    public function updateProfile(Request $request)
+    {
         $user = Auth::user();
 
         $request->validate([

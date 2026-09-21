@@ -6,9 +6,12 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Services\GhnService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -67,7 +70,7 @@ class OrderController extends Controller
 
         $coupon = Coupon::whereRaw('LOWER(code) = ?', [strtolower(trim($request->code))])->first();
 
-        if (! $coupon) {
+        if (!$coupon) {
             return back()->withInput()->with('error', 'Mã giảm giá không tồn tại.');
         }
 
@@ -111,7 +114,7 @@ class OrderController extends Controller
             'to_district_id' => ['required', 'integer'],
             'to_ward_code' => ['required', 'string'],
             'shipping_fee' => ['required', 'numeric'],
-            'payment_method' => ['required', 'in:cod,vnpay'],
+            'payment_method' => ['required', 'in:cod,vnpay,sepay'],
         ]);
 
         $cart = session()->get('cart', []);
@@ -141,6 +144,8 @@ class OrderController extends Controller
                 'shipping_name' => $request->shipping_name,
                 'shipping_phone' => $request->shipping_phone,
                 'shipping_address' => $request->shipping_address,
+                'to_district_id' => (int) $request->to_district_id,
+                'to_ward_code' => (string) $request->to_ward_code,
                 'coupon_code' => $couponCode,
                 'discount_amount' => $discountAmount,
                 'payment_method' => $request->payment_method,
@@ -159,7 +164,11 @@ class OrderController extends Controller
                     throw new \Exception('Sản phẩm "' . $product->name . '" không đủ tồn kho.');
                 }
 
-                $product->decrement('stock', $quantity);
+                // CHỈ TRỪ TỒN KHO NGAY NẾU LÀ ĐƠN COD (Vì đơn COD được xác nhận giao hàng ngay)
+                // ĐỐI VỚI VNPAY / SEPAY: PHẢI THANH TOÁN TIỀN THÀNH CÔNG MỚI TRỪ VÀO KHO
+                if ($request->payment_method === 'cod') {
+                    $product->decrement('stock', $quantity);
+                }
 
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -180,6 +189,18 @@ class OrderController extends Controller
 
             if ($request->payment_method === 'vnpay') {
                 return $this->createVnpayUrl($order);
+            }
+
+            if ($request->payment_method === 'sepay') {
+                return redirect()->route('payment.sepay', ['order_id' => $order->id]);
+            }
+
+            // ĐỐI VỚI ĐƠN COD: TỰ ĐỘNG TẠO ĐƠN GHN NGAY (TRẠNG THÁI VẪN LÀ CHƯA THANH TOÁN PENDING)
+            if ($request->payment_method === 'cod') {
+                GhnService::createShippingOrder($order);
+
+                return redirect()->route('checkout.success', ['id' => $order->id])
+                    ->with('success', 'Đặt hàng COD thành công! Đơn hàng đã được tạo trên GHN và đang ở trạng thái chờ giao hàng (chưa thanh toán).');
             }
 
             return redirect()->route('checkout.success', ['id' => $order->id])->with('success', 'Đặt hàng thành công!');
@@ -262,16 +283,24 @@ class OrderController extends Controller
         }
 
         $order = Order::find($request->vnp_TxnRef);
-        if (! $order) {
+        if (!$order) {
             return redirect()->route('checkout.failed')->with('error', 'Không tìm thấy đơn hàng.');
         }
 
         if (($request->vnp_ResponseCode ?? '') === '00') {
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'processing',
-                'transaction_id' => $request->vnp_TransactionNo ?? null,
-            ]);
+            if ($order->payment_status !== 'paid') {
+                // Trừ tồn kho khi thanh toán tiền thành công
+                $this->deductStock($order);
+
+                $order->update([
+                    'payment_status' => 'paid',
+                    'status' => 'processing',
+                    'transaction_id' => $request->vnp_TransactionNo ?? null,
+                ]);
+
+                // Tự động tạo mã vận đơn GHN và chuyển trạng thái sang Chờ giao hàng
+                GhnService::createShippingOrder($order);
+            }
 
             return redirect()->route('checkout.success', ['id' => $order->id])->with('success', 'Thanh toán qua VNPay thành công!');
         }
@@ -282,5 +311,162 @@ class OrderController extends Controller
         ]);
 
         return redirect()->route('checkout.failed')->with('error', 'Giao dịch VNPay không thành công.');
+    }
+
+    // Hiển thị trang thanh toán VietQR qua SePay
+    public function sepayPayment($orderId)
+    {
+        $order = Order::with('orderItems.product')->findOrFail($orderId);
+
+        if ($order->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
+            abort(403, 'Bạn không có quyền truy cập đơn hàng này.');
+        }
+
+        if ($order->payment_status === 'paid') {
+            return redirect()->route('checkout.success', ['id' => $order->id])
+                ->with('success', 'Đơn hàng này đã được thanh toán thành công!');
+        }
+
+        $bankBrand = config('services.sepay.bank_brand', 'TPBank');
+        $accountNumber = config('services.sepay.account_number', '12325072005');
+        $accountName = config('services.sepay.account_name', 'HOANG NGOC THI');
+        $amount = (int) round($order->total_price);
+        $transferContent = 'DH' . $order->id;
+
+        // Sinh link ảnh VietQR SePay chuẩn (template compact)
+        $qrUrl = "https://qr.sepay.vn/img?acc={$accountNumber}&bank={$bankBrand}&amount={$amount}&des={$transferContent}";
+
+        return view('cart.sepay_payment', compact(
+            'order',
+            'qrUrl',
+            'bankBrand',
+            'accountNumber',
+            'accountName',
+            'amount',
+            'transferContent'
+        ));
+    }
+
+    // API Kiểm tra trạng thái thanh toán SePay (Gọi từ AJAX trên trang thanh toán)
+    public function checkSepayStatus($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        // Nếu đơn hàng đã đánh dấu paid (ví dụ nhận từ Webhook trước đó)
+        if ($order->payment_status === 'paid') {
+            return response()->json([
+                'paid' => true,
+                'redirect' => route('checkout.success', ['id' => $order->id])
+            ]);
+        }
+
+        // Gọi trực tiếp SePay API để đối soát giao dịch (Hữu ích ngay cả trên Localhost chưa mở Webhook)
+        $apiToken = config('services.sepay.api_token');
+        if ($apiToken) {
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $apiToken,
+                    'Content-Type' => 'application/json',
+                ])->timeout(5)->get('https://my.sepay.vn/userapi/transactions/list', [
+                            'limit' => 20
+                        ]);
+
+                if ($response->successful()) {
+                    $transactions = $response->json('transactions') ?? [];
+                    $expectedContent = 'DH' . $order->id;
+                    $expectedAmount = (float) $order->total_price;
+
+                    foreach ($transactions as $trans) {
+                        $content = strtoupper($trans['transaction_content'] ?? '');
+                        $amountIn = (float) ($trans['amount_in'] ?? 0);
+
+                        // Kiểm tra nếu nội dung chứa mã đơn hàng DH{id} và số tiền >= tổng tiền đơn
+                        if (str_contains($content, strtoupper($expectedContent)) && $amountIn >= $expectedAmount) {
+                            if ($order->payment_status !== 'paid') {
+                                // Trừ tồn kho khi thanh toán tiền thành công
+                                $this->deductStock($order);
+
+                                $order->update([
+                                    'payment_status' => 'paid',
+                                    'status' => 'processing',
+                                    'transaction_id' => $trans['id'] ?? $trans['reference_number'] ?? null,
+                                ]);
+
+                                // Tự động tạo mã vận đơn GHN và chuyển trạng thái sang Chờ giao hàng
+                                GhnService::createShippingOrder($order);
+                            }
+
+                            return response()->json([
+                                'paid' => true,
+                                'redirect' => route('checkout.success', ['id' => $order->id])
+                            ]);
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Lỗi check SePay API: ' . $e->getMessage());
+            }
+        }
+
+        return response()->json([
+            'paid' => false
+        ]);
+    }
+
+    // Webhook nhận thông báo tự động từ SePay server
+    public function sepayWebhook(Request $request)
+    {
+        $data = $request->all();
+        Log::info('SePay Webhook Received:', $data);
+
+        $transferType = strtolower($data['transferType'] ?? 'in');
+        $transferAmount = (float) ($data['transferAmount'] ?? 0);
+        $content = strtoupper($data['content'] ?? $data['description'] ?? '');
+
+        if ($transferType !== 'in' && $transferType !== '') {
+            return response()->json(['success' => false, 'message' => 'Ignored transfer type'], 200);
+        }
+
+        if (preg_match('/DH(\d+)/i', $content, $matches)) {
+            $orderId = (int) $matches[1];
+            $order = Order::find($orderId);
+
+            if ($order && $order->payment_status !== 'paid') {
+                if ($transferAmount >= (float) $order->total_price) {
+                    // Trừ tồn kho khi thanh toán tiền thành công
+                    $this->deductStock($order);
+
+                    $order->update([
+                        'payment_status' => 'paid',
+                        'status' => 'processing',
+                        'transaction_id' => (string) ($data['id'] ?? $data['referenceCode'] ?? time()),
+                    ]);
+
+                    // Tự động tạo mã vận đơn GHN và chuyển trạng thái sang Chờ giao hàng
+                    GhnService::createShippingOrder($order);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Order updated to paid, deducted stock, and created GHN shipping order'
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Processed webhook'
+        ]);
+    }
+
+    /**
+     * Trừ tồn kho sản phẩm khi đơn hàng online được thanh toán thành công
+     */
+    protected function deductStock(Order $order): void
+    {
+        $order->loadMissing('orderItems');
+        foreach ($order->orderItems as $item) {
+            Product::where('id', $item->product_id)->decrement('stock', $item->quantity);
+        }
     }
 }

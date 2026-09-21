@@ -18,11 +18,21 @@ class CartController extends Controller
     // Thêm sản phẩm vào giỏ hàng
     public function add(Request $request, $id)
     {
+        // 1. Bắt buộc đăng nhập trước khi thêm giỏ hàng
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập tài khoản để thêm sản phẩm vào giỏ hàng.');
+        }
+
+        // 2. Bắt buộc xác thực email trước khi thêm giỏ hàng
+        if (!auth()->user()->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice')->with('error', 'Bạn cần xác thực địa chỉ email trước khi có thể thêm sản phẩm vào giỏ hàng.');
+        }
+
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
         $quantity = (int) $request->input('quantity', 1);
-        
+
         $currentCartQuantity = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
         $totalRequested = $currentCartQuantity + $quantity;
 
@@ -43,7 +53,7 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
-        
+
         return redirect()->route('cart.success');
     }
 
@@ -58,16 +68,16 @@ class CartController extends Controller
     {
         if ($request->id && $request->quantity) {
             $cart = session()->get('cart', []);
-            if(isset($cart[$request->id])) {
+            if (isset($cart[$request->id])) {
                 $product = Product::find($request->id);
-                if($product && $request->quantity > $product->stock) {
+                if ($product && $request->quantity > $product->stock) {
                     return redirect()->back()->with('error', 'Số lượng vượt quá tồn kho cho phép (' . $product->stock . ').');
                 }
-                
+
                 $cart[$request->id]['quantity'] = $request->quantity;
                 session()->put('cart', $cart);
             }
-            
+
             return redirect()->back()->with('success', 'Cập nhật giỏ hàng thành công!');
         }
     }
@@ -81,7 +91,7 @@ class CartController extends Controller
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
             }
-            
+
             return redirect()->back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
         }
     }
@@ -104,14 +114,15 @@ class CartController extends Controller
         }
 
         try {
-            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
-            $shopId = 217497;
+            $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
+            $shopId = (int) config('services.ghn.shop_id', 217505);
+            $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Token' => $token,
                 'ShopId' => $shopId,
-            ])->post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', $payload);
+            ])->post($apiUrl . '/v2/shipping-order/fee', $payload);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -141,11 +152,12 @@ class CartController extends Controller
     public function getProvinces()
     {
         try {
-            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
+            $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
+            $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
 
             $response = Http::withHeaders([
                 'Token' => $token
-            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province');
+            ])->get($apiUrl . '/master-data/province');
 
             return response()->json($response->json());
         } catch (\Exception $e) {
@@ -157,13 +169,14 @@ class CartController extends Controller
     public function getDistricts(Request $request)
     {
         try {
-            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
+            $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
+            $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
 
             $response = Http::withHeaders([
                 'Token' => $token
-            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district', [
-                'province_id' => (int) $request->province_id
-            ]);
+            ])->get($apiUrl . '/master-data/district', [
+                        'province_id' => (int) $request->province_id
+                    ]);
 
             return response()->json($response->json());
         } catch (\Exception $e) {
@@ -175,13 +188,14 @@ class CartController extends Controller
     public function getWards(Request $request)
     {
         try {
-            $token = 'd536b676-aa88-11f1-a973-aee5264794df';
+            $token = config('services.ghn.token', 'eea1eb4a-aa85-11f1-a973-aee5264794df');
+            $apiUrl = rtrim(config('services.ghn.api_url', 'https://dev-online-gateway.ghn.vn/shiip/public-api'), '/');
 
             $response = Http::withHeaders([
                 'Token' => $token
-            ])->get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward', [
-                'district_id' => (int) $request->district_id
-            ]);
+            ])->get($apiUrl . '/master-data/ward', [
+                        'district_id' => (int) $request->district_id
+                    ]);
 
             return response()->json($response->json());
         } catch (\Exception $e) {

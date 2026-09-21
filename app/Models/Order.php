@@ -24,6 +24,7 @@ class Order extends Model
         'payment_method',
         'payment_status',
         'transaction_id',
+        'ghn_order_code',
     ];
 
     // Một đơn hàng thuộc về một người dùng

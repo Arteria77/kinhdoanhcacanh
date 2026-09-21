@@ -51,8 +51,8 @@
 
                 @auth
                     @if(Auth::user()->role === 'admin')
-                        <a href="{{ route('admin.products.index') }}" class="bg-rose-50 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-rose-100 transition flex items-center gap-1">
-                            <i class="fa-solid fa-gear"></i> Quản lý
+                        <a href="{{ route('admin.dashboard') }}" class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-100 transition flex items-center gap-1.5 shadow-2xs">
+                            <i class="fa-solid fa-gauge-high"></i> Quản trị
                         </a>
                     @endif
                     <a href="{{ route('profile.show') }}" class="text-slate-700 hover:text-blue-600 font-medium text-sm flex items-center gap-1">
@@ -69,6 +69,45 @@
             </div>
         </div>
     </header>
+
+    @auth
+        @if(!Auth::user()->hasVerifiedEmail())
+            <div class="bg-amber-500 text-white px-4 py-2.5 text-sm font-medium shadow-sm">
+                <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-100"></i>
+                        <span>Tài khoản của bạn (<b>{{ Auth::user()->email }}</b>) chưa được xác thực email. Hãy xác thực để có thể thêm sản phẩm vào giỏ hàng.</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <form action="{{ route('verification.send') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="bg-white text-amber-800 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-amber-50 transition shadow-sm">
+                                Gửi lại email xác thực
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endauth
+
+    <div class="max-w-7xl mx-auto px-4 mt-4">
+        @if(session('success'))
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-check-circle text-emerald-500"></i> {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-circle-exclamation text-rose-500"></i> {{ session('error') }}
+            </div>
+        @endif
+        @if(session('status') == 'verification-link-sent')
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-paper-plane text-emerald-500"></i> Một email xác thực mới đã được gửi tới hộp thư của bạn! Vui lòng kiểm tra email.
+            </div>
+        @endif
+    </div>
 
     <!-- Hero Banner -->
     <section class="max-w-7xl mx-auto px-4 my-6">
@@ -105,6 +144,31 @@
             @endif
         </div>
         
+        <!-- Danh mục các loài cá cảnh -->
+        @if(isset($categories) && $categories->count() > 0)
+        <div class="mb-8">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Khám phá theo danh mục loài cá</p>
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <a href="{{ route('home') }}#products-section" 
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ !request('category_id') ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/30' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' }}">
+                    Tất cả các loài
+                </a>
+                @foreach($categories as $cat)
+                <a href="{{ route('home', ['category_id' => $cat->id]) }}#products-section" 
+                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 {{ request('category_id') == $cat->id ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/30' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' }}">
+                    <span>🐟</span>
+                    <span>{{ $cat->name }}</span>
+                    @if($cat->products_count > 0)
+                    <span class="text-[10px] px-1.5 py-0.5 rounded-full {{ request('category_id') == $cat->id ? 'bg-blue-700 text-blue-100' : 'bg-slate-100 text-slate-500' }}">
+                        {{ $cat->products_count }}
+                    </span>
+                    @endif
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @forelse($products as $product)
                 <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden flex flex-col justify-between border border-slate-100 group">
@@ -125,6 +189,11 @@
 
                         <!-- Thông tin sản phẩm -->
                         <div class="p-5">
+                            @if($product->category)
+                                <span class="inline-block px-2 py-0.5 rounded text-[11px] font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200 mb-1.5">
+                                    {{ $product->category->name }}
+                                </span>
+                            @endif
                             <h3 class="font-bold text-slate-800 text-base mb-2 line-clamp-1 group-hover:text-blue-600 transition">{{ $product->name }}</h3>
                             <div class="text-rose-600 font-black text-lg mb-4">
                                 {{ number_format($product->price) }} <span class="text-xs font-semibold">đ</span>

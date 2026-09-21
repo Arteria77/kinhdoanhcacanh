@@ -140,13 +140,26 @@
                 <div class="space-y-2 pt-2">
                     <label class="block text-sm font-semibold mb-1">Phương thức thanh toán</label>
                     <div class="space-y-2">
-                        <label class="flex items-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition">
+                        <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50/40 transition">
                             <input type="radio" name="payment_method" value="cod" {{ old('payment_method', 'cod') === 'cod' ? 'checked' : '' }} class="text-blue-600 focus:ring-blue-500">
-                            <span class="text-sm font-medium">Thanh toán khi nhận hàng (COD)</span>
+                            <span class="text-sm font-medium text-slate-800">Thanh toán khi nhận hàng (COD)</span>
                         </label>
-                        <label class="flex items-center gap-2 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition">
+
+                        <label class="flex items-center gap-3 p-3 border border-blue-200 bg-blue-50/30 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50/60 transition">
+                            <input type="radio" name="payment_method" value="sepay" {{ old('payment_method') === 'sepay' ? 'checked' : '' }} class="text-blue-600 focus:ring-blue-500">
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-bold text-slate-800">Chuyển khoản Ngân hàng (Quét mã VietQR / SePay)</span>
+                                </div>
+                                <span class="text-xs bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Tự động 24/7
+                                </span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50/40 transition">
                             <input type="radio" name="payment_method" value="vnpay" {{ old('payment_method') === 'vnpay' ? 'checked' : '' }} class="text-blue-600 focus:ring-blue-500">
-                            <span class="text-sm font-medium">Thanh toán qua VNPAY</span>
+                            <span class="text-sm font-medium text-slate-800">Thanh toán qua Ví / Cổng VNPAY</span>
                         </label>
                     </div>
                 </div>
