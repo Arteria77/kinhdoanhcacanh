@@ -7,11 +7,126 @@
     <title>Fashu - Thế Giới Cá Cảnh & Thủy Sinh</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fashu-deep: #071b2c;
+            --fashu-ocean: #0e7490;
+            --fashu-mint: #5eead4;
+            --fashu-coral: #fb923c;
+        }
+
+        body.fashu-aquarium-shell {
+            background:
+                radial-gradient(circle at 8% 12%, rgba(94, 234, 212, 0.16), transparent 24rem),
+                radial-gradient(circle at 92% 42%, rgba(56, 189, 248, 0.12), transparent 28rem),
+                linear-gradient(135deg, #f4fbfb 0%, #f8fafc 48%, #fff7ed 100%);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .fashu-aquarium-shell::before,
+        .fashu-aquarium-shell::after {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(14, 116, 144, 0.18);
+            border-radius: 999px;
+            animation: fashu-bubble 13s linear infinite;
+        }
+
+        .fashu-aquarium-shell::before { left: 7%; bottom: -30px; }
+        .fashu-aquarium-shell::after { right: 13%; bottom: -40px; width: 11px; height: 11px; animation-delay: -6s; }
+
+        .fashu-topbar {
+            background: linear-gradient(90deg, #06283d, #075985 52%, #0f766e);
+        }
+
+        .fashu-header {
+            background: rgba(255, 255, 255, 0.88);
+            box-shadow: 0 10px 30px rgba(7, 59, 82, 0.08);
+            backdrop-filter: blur(14px);
+        }
+
+        .fashu-brand {
+            color: var(--fashu-deep);
+        }
+
+        .fashu-brand i { color: var(--fashu-ocean); }
+
+        .fashu-search-input:focus {
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.18);
+        }
+
+        .fashu-products-heading {
+            position: relative;
+        }
+
+        .fashu-products-heading::after {
+            content: '';
+            display: block;
+            width: 54px;
+            height: 4px;
+            margin-top: 12px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--fashu-mint), var(--fashu-coral));
+        }
+
+        .fashu-product-card {
+            border-color: rgba(14, 116, 144, 0.1);
+            box-shadow: 0 8px 24px rgba(7, 59, 82, 0.05);
+        }
+
+        .fashu-product-card:hover {
+            border-color: rgba(20, 184, 166, 0.35);
+            transform: translateY(-5px);
+        }
+
+        @keyframes fashu-bubble {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            12% { opacity: 0.65; }
+            100% { transform: translateY(-105vh) scale(1.25); opacity: 0; }
+        }
+
+        .fashu-hero-slide {
+            opacity: 0;
+            transform: translateX(24px);
+            transition: opacity 500ms ease, transform 500ms ease;
+            pointer-events: none;
+        }
+
+        .fashu-hero-slide.is-active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .fashu-hero-progress {
+            transform-origin: left;
+            animation: fashu-hero-progress 5s linear infinite;
+        }
+
+        @keyframes fashu-hero-progress {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .fashu-hero-slide { transition: none; }
+            .fashu-hero-progress { animation: none; }
+            .fashu-aquarium-shell::before,
+            .fashu-aquarium-shell::after { animation: none; }
+            .fashu-product-card { transition: none; }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans">
+<body class="fashu-aquarium-shell text-slate-800">
 
     <!-- Top Bar -->
-    <div class="bg-blue-900 text-blue-100 text-xs py-2 px-4">
+    <div class="fashu-topbar text-cyan-50 text-xs py-2 px-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <span><i class="fa-solid fa-phone mr-1"></i> Hotline: 0900000000</span>
@@ -22,17 +137,17 @@
     </div>
 
     <!-- Header / Navbar -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+    <header class="fashu-header sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <!-- Logo -->
-            <a href="/" class="text-2xl font-black text-blue-600 flex items-center gap-2">
-                <i class="fa-solid fa-fish-fins text-blue-500"></i> FASHU
+            <a href="/" class="fashu-brand text-2xl font-black flex items-center gap-2">
+                <i class="fa-solid fa-fish-fins"></i> FASHU
             </a>
 
             <!-- Form Tìm kiếm & Nút AI -->
             <div class="hidden md:flex items-center gap-3 w-1/2 justify-center">
                 <form action="{{ route('shop.search') }}" method="GET" class="flex items-center w-2/3">
-                    <input type="text" name="query" value="{{ request('query') }}" placeholder="Tìm kiếm cá cảnh, phụ kiện thủy sinh..." class="w-full bg-slate-100 border border-slate-200 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:bg-white focus:border-blue-500 transition">
+                    <input type="text" name="query" value="{{ request('query') }}" placeholder="Tìm kiếm cá cảnh, phụ kiện thủy sinh..." class="fashu-search-input w-full bg-cyan-50/70 border border-cyan-100 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:bg-white focus:border-teal-400 transition">
                     <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-r-lg hover:bg-blue-700 transition text-sm">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
@@ -119,36 +234,127 @@
     </div>
 
     <!-- Hero Banner -->
-    <section class="max-w-7xl mx-auto px-4 my-6">
-        <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 rounded-2xl p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between shadow-xl">
-            <div class="max-w-xl mb-6 md:mb-0">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="bg-blue-500/40 border border-blue-300/30 text-blue-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Thế giới thủy sinh cao cấp</span>
-                    <span class="bg-purple-500/50 border border-purple-300/30 text-purple-100 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                        <i class="fa-solid fa-robot"></i> Trợ lý AI 24/7
-                    </span>
+    <section class="max-w-7xl mx-auto px-4 my-6" aria-label="Giới thiệu Fashu Aqua">
+        <div id="fashu-hero" class="relative min-h-[380px] overflow-hidden rounded-2xl bg-slate-950 text-white shadow-xl" aria-live="polite">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(45,212,191,0.35),transparent_35%),radial-gradient(circle_at_15%_90%,rgba(251,146,60,0.25),transparent_35%)]"></div>
+
+            <div class="fashu-hero-slide is-active absolute inset-0 flex items-center px-8 py-10 md:px-14" data-slide>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-teal-300/40 bg-teal-300/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-teal-100"><i class="fa-solid fa-water"></i> Thế giới thủy sinh cao cấp</span>
+                    <h1 class="mb-4 text-3xl font-black leading-tight md:text-5xl">Biến góc nhỏ thành đại dương riêng của bạn</h1>
+                    <p class="mb-6 max-w-xl text-sm leading-relaxed text-slate-200 md:text-base">Cá khỏe, màu rực rỡ và những phụ kiện được chọn để bể cá của bạn luôn có sức sống.</p>
+                    <a href="#products-section" class="inline-block rounded-xl bg-teal-300 px-6 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-teal-950/30 transition hover:bg-teal-200">Khám phá ngay <i class="fa-solid fa-arrow-right ml-1"></i></a>
                 </div>
-                <h1 class="text-3xl md:text-5xl font-extrabold mt-1 mb-4 leading-tight">Chuyên Cung Cấp Các Dòng Cá Cảnh Đẹp & Độc Lạ</h1>
-                <p class="text-blue-100 mb-6 text-sm md:text-base leading-relaxed">Mang thiên nhiên đại dương vào không gian sống của bạn với các giống cá khỏe mạnh, màu sắc rực rỡ và dịch vụ tư vấn AI tự động chuyên nghiệp.</p>
-                <div class="flex flex-wrap items-center gap-3">
-                    <a href="#products-section" class="bg-white text-blue-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-blue-50 transition inline-block text-sm">Khám phá ngay &rarr;</a>
-                    <!-- Nút trải nghiệm AI -->
-                    <button type="button" onclick="openAiModal()" class="bg-indigo-900/80 hover:bg-indigo-900 text-white border border-indigo-400/40 font-bold px-5 py-3 rounded-xl shadow-lg transition text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-                        <span>Tạo gợi ý cá bằng AI</span>
-                    </button>
-                </div>
+                <i class="fa-solid fa-fish absolute -right-4 bottom-0 text-[13rem] text-teal-300/15 md:right-12 md:text-[18rem]"></i>
             </div>
-            <div class="text-blue-300/20 text-8xl md:text-9xl">
-                <i class="fa-solid fa-fish"></i>
+
+            <div class="fashu-hero-slide absolute inset-0 flex items-center bg-gradient-to-br from-orange-950/60 via-slate-950 to-slate-950 px-8 py-10 md:px-14" data-slide>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-300/40 bg-orange-300/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-100"><i class="fa-solid fa-tags"></i> Ưu đãi trong tuần</span>
+                    <h2 class="mb-4 text-3xl font-black leading-tight md:text-5xl">Giảm đến 20% cho cá và phụ kiện thủy sinh</h2>
+                    <p class="mb-6 max-w-xl text-sm leading-relaxed text-orange-50/80 md:text-base">Làm mới bể cá với những món đồ yêu thích, giá tốt hơn và vẫn trọn vẹn chất lượng từ Fashu Aqua.</p>
+                    <a href="#products-section" class="inline-block rounded-xl bg-orange-300 px-6 py-3 text-sm font-bold text-orange-950 shadow-lg shadow-orange-950/30 transition hover:bg-orange-200">Săn ưu đãi ngay <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+                <i class="fa-solid fa-percent absolute -right-2 top-6 text-[14rem] text-orange-300/10 md:right-20 md:text-[19rem]"></i>
+            </div>
+
+            <div class="fashu-hero-slide absolute inset-0 flex items-center bg-gradient-to-br from-fuchsia-950/70 via-slate-950 to-slate-950 px-8 py-10 md:px-14" data-slide>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-fuchsia-300/40 bg-fuchsia-300/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-fuchsia-100"><i class="fa-solid fa-calendar-days"></i> Sự kiện tại Fashu</span>
+                    <h2 class="mb-4 text-3xl font-black leading-tight md:text-5xl">Ngày hội thủy sinh: chọn cá, nhận quà vui</h2>
+                    <p class="mb-6 max-w-xl text-sm leading-relaxed text-fuchsia-50/80 md:text-base">Tham gia cùng cộng đồng yêu cá cảnh, nhận tư vấn setup bể và những phần quà dành riêng cho khách hàng mới.</p>
+                    <a href="#products-section" class="inline-block rounded-xl bg-fuchsia-300 px-6 py-3 text-sm font-bold text-fuchsia-950 shadow-lg shadow-fuchsia-950/30 transition hover:bg-fuchsia-200">Khám phá sự kiện <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+                <i class="fa-solid fa-calendar-check absolute -right-2 bottom-0 text-[13rem] text-fuchsia-300/10 md:right-16 md:text-[18rem]"></i>
+            </div>
+
+            <div class="fashu-hero-slide absolute inset-0 flex items-center bg-gradient-to-br from-amber-950/70 via-slate-950 to-slate-950 px-8 py-10 md:px-14" data-slide>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-300/40 bg-amber-300/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-100"><i class="fa-solid fa-crown"></i> Sản phẩm nổi bật</span>
+                    <h2 class="mb-4 text-3xl font-black leading-tight md:text-5xl">Những lựa chọn được người chơi yêu thích nhất</h2>
+                    <p class="mb-6 max-w-xl text-sm leading-relaxed text-amber-50/80 md:text-base">Cá Betta, Neon, Guppy và phụ kiện bán chạy đã sẵn sàng để bể cá của bạn thêm cuốn hút.</p>
+                    <a href="#products-section" class="inline-block rounded-xl bg-amber-300 px-6 py-3 text-sm font-bold text-amber-950 shadow-lg shadow-amber-950/30 transition hover:bg-amber-200">Xem sản phẩm nổi bật <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+                <i class="fa-solid fa-trophy absolute -right-2 top-4 text-[13rem] text-amber-300/10 md:right-20 md:text-[18rem]"></i>
+            </div>
+
+            <div class="fashu-hero-slide absolute inset-0 flex items-center bg-gradient-to-br from-emerald-950/70 via-slate-950 to-slate-950 px-8 py-10 md:px-14" data-slide>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/40 bg-emerald-300/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-100"><i class="fa-solid fa-fish"></i> Cá mới về</span>
+                    <h2 class="mb-4 text-3xl font-black leading-tight md:text-5xl">Đàn cá mới đang chờ bạn khám phá</h2>
+                    <p class="mb-6 max-w-xl text-sm leading-relaxed text-emerald-50/80 md:text-base">Nguồn cá mới tuyển chọn, khỏe mạnh và lên màu đẹp. Số lượng có hạn cho những người nhanh tay.</p>
+                    <a href="#products-section" class="inline-block rounded-xl bg-emerald-300 px-6 py-3 text-sm font-bold text-emerald-950 shadow-lg shadow-emerald-950/30 transition hover:bg-emerald-200">Xem cá mới về <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+                <i class="fa-solid fa-fish-fins absolute -right-4 bottom-0 text-[13rem] text-emerald-300/10 md:right-12 md:text-[18rem]"></i>
+            </div>
+
+            <div class="fashu-hero-slide absolute inset-0 flex items-center bg-gradient-to-br from-cyan-950/70 via-slate-950 to-slate-950 px-8 py-10 md:px-14" data-slide>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-300/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-100"><i class="fa-solid fa-robot"></i> Fashu AI đồng hành</span>
+                    <h2 class="mb-4 text-3xl font-black leading-tight md:text-5xl">Chọn đúng cá, nuôi vui hơn mỗi ngày</h2>
+                    <p class="mb-6 max-w-xl text-sm leading-relaxed text-cyan-50/80 md:text-base">Chưa biết bắt đầu từ đâu? Hãy để Fashu AI gợi ý loài cá phù hợp với kích thước bể và phong cách của bạn.</p>
+                    <button type="button" onclick="openAiModal()" class="rounded-xl bg-cyan-300 px-5 py-3 text-sm font-bold text-cyan-950 shadow-lg shadow-cyan-950/30 transition hover:bg-cyan-200"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Tạo gợi ý bằng AI</button>
+                </div>
+                <i class="fa-solid fa-wand-magic-sparkles absolute -right-2 bottom-4 text-[13rem] text-cyan-300/10 md:right-16 md:text-[18rem]"></i>
+            </div>
+
+            <div class="absolute bottom-6 left-8 right-8 z-20 flex items-center gap-4 md:left-14 md:right-14">
+                <div class="h-1 flex-1 overflow-hidden rounded-full bg-white/20"><div class="fashu-hero-progress h-full bg-teal-300"></div></div>
+                <div class="flex gap-2" role="tablist" aria-label="Chọn nội dung giới thiệu">
+                    <button type="button" class="h-2.5 w-2.5 rounded-full bg-white" data-hero-dot aria-label="Nội dung 1"></button>
+                    <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/40" data-hero-dot aria-label="Nội dung 2"></button>
+                    <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/40" data-hero-dot aria-label="Nội dung 3"></button>
+                    <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/40" data-hero-dot aria-label="Nội dung 4"></button>
+                    <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/40" data-hero-dot aria-label="Nội dung 5"></button>
+                    <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/40" data-hero-dot aria-label="Nội dung 6"></button>
+                </div>
             </div>
         </div>
     </section>
 
+    <script>
+        (() => {
+            const hero = document.getElementById('fashu-hero');
+            if (!hero) return;
+
+            const slides = [...hero.querySelectorAll('[data-slide]')];
+            const dots = [...hero.querySelectorAll('[data-hero-dot]')];
+            const progress = hero.querySelector('.fashu-hero-progress');
+            let activeIndex = 0;
+            let timer;
+
+            function showSlide(index) {
+                activeIndex = index;
+                slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === activeIndex));
+                dots.forEach((dot, dotIndex) => {
+                    dot.classList.toggle('bg-white', dotIndex === activeIndex);
+                    dot.classList.toggle('bg-white/40', dotIndex !== activeIndex);
+                    dot.setAttribute('aria-selected', dotIndex === activeIndex ? 'true' : 'false');
+                });
+                progress.style.animation = 'none';
+                progress.offsetHeight;
+                progress.style.animation = '';
+            }
+
+            function startRotation() {
+                clearInterval(timer);
+                timer = setInterval(() => showSlide((activeIndex + 1) % slides.length), 5000);
+            }
+
+            dots.forEach((dot, index) => dot.addEventListener('click', () => {
+                showSlide(index);
+                startRotation();
+            }));
+            hero.addEventListener('mouseenter', () => clearInterval(timer));
+            hero.addEventListener('mouseleave', startRotation);
+            startRotation();
+        })();
+    </script>
+
     <!-- Main Content: Danh sách sản phẩm -->
     <main id="products-section" class="max-w-7xl mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
-            <div>
+            <div class="fashu-products-heading">
                 <h2 class="text-2xl font-black text-slate-900 tracking-tight">
                     @if(isset($keyword))
                         Kết quả tìm kiếm cho: "{{ $keyword }}"
@@ -192,7 +398,7 @@
         
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @forelse($products as $product)
-                <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden flex flex-col justify-between border border-slate-100 group">
+                <div class="fashu-product-card bg-white/90 rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden flex flex-col justify-between border group">
                     <div>
                         <!-- Khung ảnh sản phẩm -->
                         <div class="relative overflow-hidden bg-slate-100 h-52">

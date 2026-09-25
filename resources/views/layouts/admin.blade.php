@@ -35,7 +35,7 @@
 
                 <!-- Right Actions -->
                 <div class="flex items-center gap-4">
-                    <a href="/" target="_blank" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition border border-slate-200">
+                    <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition border border-slate-200">
                         <span>🌐</span> Xem Website
                     </a>
 

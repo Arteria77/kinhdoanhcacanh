@@ -27,23 +27,14 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ], [
             'name.required' => 'Vui lòng nhập tên loài cá.',
             'name.unique' => 'Tên loài cá này đã tồn tại trong hệ thống.',
         ]);
 
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
-        }
-
         Category::create([
             'name' => trim($request->name),
             'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'image' => $imagePath,
         ]);
 
         return redirect()->route('admin.categories.index')->with('success', 'Thêm danh mục loài cá thành công!');
