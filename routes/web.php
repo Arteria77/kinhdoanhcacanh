@@ -14,6 +14,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\AiChatController;
+
+// Route xử lý tin nhắn từ AI Assistant
+Route::post('/ai/chat', [AiChatController::class, 'chat'])->name('ai.chat');
+
+Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
 
 // Nhóm route quản lý giỏ hàng
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');

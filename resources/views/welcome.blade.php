@@ -29,13 +29,21 @@
                 <i class="fa-solid fa-fish-fins text-blue-500"></i> FASHU
             </a>
 
-            <!-- Form Tìm kiếm -->
-            <form action="{{ route('shop.search') }}" method="GET" class="hidden md:flex items-center w-1/3">
-                <input type="text" name="query" value="{{ request('query') }}" placeholder="Tìm kiếm cá cảnh, phụ kiện thủy sinh..." class="w-full bg-slate-100 border border-slate-200 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:bg-white focus:border-blue-500 transition">
-                <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-r-lg hover:bg-blue-700 transition text-sm">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+            <!-- Form Tìm kiếm & Nút AI -->
+            <div class="hidden md:flex items-center gap-3 w-1/2 justify-center">
+                <form action="{{ route('shop.search') }}" method="GET" class="flex items-center w-2/3">
+                    <input type="text" name="query" value="{{ request('query') }}" placeholder="Tìm kiếm cá cảnh, phụ kiện thủy sinh..." class="w-full bg-slate-100 border border-slate-200 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:bg-white focus:border-blue-500 transition">
+                    <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-r-lg hover:bg-blue-700 transition text-sm">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+
+                <!-- Nút Lựa chọn AI trên Header -->
+                <button type="button" onclick="openAiModal()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-3.5 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-md shadow-purple-200 animate-pulse">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Tư vấn AI</span>
                 </button>
-            </form>
+            </div>
 
             <!-- User Auth & Actions -->
             <div class="flex items-center space-x-4">
@@ -114,10 +122,22 @@
     <section class="max-w-7xl mx-auto px-4 my-6">
         <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 rounded-2xl p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between shadow-xl">
             <div class="max-w-xl mb-6 md:mb-0">
-                <span class="bg-blue-500/40 border border-blue-300/30 text-blue-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Thế giới thủy sinh cao cấp</span>
-                <h1 class="text-3xl md:text-5xl font-extrabold mt-3 mb-4 leading-tight">Chuyên Cung Cấp Các Dòng Cá Cảnh Đẹp & Độc Lạ</h1>
-                <p class="text-blue-100 mb-6 text-sm md:text-base leading-relaxed">Mang thiên nhiên đại dương vào không gian sống của bạn với các giống cá khỏe mạnh, màu sắc rực rỡ và dịch vụ chuyên nghiệp tại Hà Nội.</p>
-                <a href="#products-section" class="bg-white text-blue-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-blue-50 transition inline-block text-sm">Khám phá ngay &rarr;</a>
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="bg-blue-500/40 border border-blue-300/30 text-blue-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Thế giới thủy sinh cao cấp</span>
+                    <span class="bg-purple-500/50 border border-purple-300/30 text-purple-100 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                        <i class="fa-solid fa-robot"></i> Trợ lý AI 24/7
+                    </span>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold mt-1 mb-4 leading-tight">Chuyên Cung Cấp Các Dòng Cá Cảnh Đẹp & Độc Lạ</h1>
+                <p class="text-blue-100 mb-6 text-sm md:text-base leading-relaxed">Mang thiên nhiên đại dương vào không gian sống của bạn với các giống cá khỏe mạnh, màu sắc rực rỡ và dịch vụ tư vấn AI tự động chuyên nghiệp.</p>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="#products-section" class="bg-white text-blue-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-blue-50 transition inline-block text-sm">Khám phá ngay &rarr;</a>
+                    <!-- Nút trải nghiệm AI -->
+                    <button type="button" onclick="openAiModal()" class="bg-indigo-900/80 hover:bg-indigo-900 text-white border border-indigo-400/40 font-bold px-5 py-3 rounded-xl shadow-lg transition text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                        <span>Tạo gợi ý cá bằng AI</span>
+                    </button>
+                </div>
             </div>
             <div class="text-blue-300/20 text-8xl md:text-9xl">
                 <i class="fa-solid fa-fish"></i>
@@ -206,9 +226,9 @@
                     <div class="p-5 pt-0">
                         <a href="{{ route('products.show', $product->id) }}" class="w-full block text-center bg-slate-900 text-white py-2.5 rounded-xl hover:bg-blue-600 transition font-semibold text-sm shadow-sm">
                             Xem thông tin sản phẩm
-                      </a>
-                  </div>
-            </div>
+                        </a>
+                    </div>
+                </div>
             @empty
                 <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
                     <i class="fa-solid fa-fish text-slate-300 text-5xl mb-3"></i>
@@ -243,6 +263,157 @@
             &copy; 2026 Fashu. All rights reserved. Designed with Laravel & Tailwind CSS.
         </div>
     </footer>
+
+    <!-- ==================== WIDGET AI TƯ VẤN THỦY SINH (GÓC PHẢI MÀN HÌNH) ==================== -->
+    <div id="fashu-ai-widget-box" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <!-- Nút Bật AI Float Button -->
+        
+        <!-- Khung Cửa Sổ AI Popup -->
+        <div id="fashu-ai-popup" style="display: none; width: 380px; max-width: 90vw; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; position: absolute; bottom: 65px; right: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; flex-direction: column;">
+            <!-- Header AI Popup -->
+            <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #fff; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="background: rgba(255,255,255,0.2); padding: 6px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: justify-center; justify-content: center; font-size: 12px;">✨</span>
+                    <div>
+                        <strong style="font-size: 14px; display: block; line-height: 1.2;">Fashu AI Smart Advisor</strong>
+                        <small style="font-size: 10px; opacity: 0.8; display: block;">Tư vấn phối cảnh & chọn cá tự động</small>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleAiWidget()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; width: 26px; height: 26px; cursor: pointer; font-weight: bold; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+
+            <!-- Gợi ý mẫu câu hỏi (Prompts) -->
+            <div style="background: #f8fafc; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; font-size: 11px;">
+                <button type="button" onclick="sendQuickAiPrompt('Gợi ý cá cho bể 60cm')" style="background: #e0e7ff; color: #3730a3; border: none; padding: 4px 8px; border-radius: 12px; cursor: pointer; font-weight: 600;">🐠 Bể 60cm nuôi cá gì?</button>
+                <button type="button" onclick="sendQuickAiPrompt('Cá bảy màu nuôi chung với cá nào?')" style="background: #f3e8ff; color: #6b21a8; border: none; padding: 4px 8px; border-radius: 12px; cursor: pointer; font-weight: 600;">🌿 Cá chung đàn</button>
+                <button type="button" onclick="sendQuickAiPrompt('Làm sao xử lý nước hồ bị đục?')" style="background: #fce7f3; color: #9d174d; border: none; padding: 4px 8px; border-radius: 12px; cursor: pointer; font-weight: 600;">💧 Xử lý nước đục</button>
+            </div>
+
+            <!-- Khung chứa tin nhắn AI -->
+            <div id="fashu-ai-messages" style="height: 300px; overflow-y: auto; padding: 12px; background: #fafafa; font-size: 13px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="text-align: left;">
+                    <div style="display: inline-block; padding: 8px 12px; border-radius: 12px 12px 12px 2px; background: #e0e7ff; color: #1e1b4b; max-width: 90%; word-break: break-word; line-height: 1.4;">
+                        👋 Xin chào! Tôi là **AI Fashu Aqua**. Bạn cần tư vấn chọn loại cá, phối cảnh bể thủy sinh hay cách chăm sóc cá cảnh hôm nay?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khung nhập tin nhắn AI -->
+            <div style="padding: 10px; border-top: 1px solid #e2e8f0; display: flex; background: #fff; gap: 6px;">
+                <input type="text" id="fashu-ai-input" placeholder="Hỏi AI chọn cá, làm bể..." style="flex-grow: 1; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none;">
+                <button id="fashu-ai-send-btn" type="button" onclick="sendAiMessage()" style="background: #6366f1; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script điều khiển AI Widget -->
+    <script>
+        function toggleAiWidget() {
+            const popup = document.getElementById("fashu-ai-popup");
+            if (popup.style.display === "none" || popup.style.display === "") {
+                popup.style.display = "flex";
+            } else {
+                popup.style.display = "none";
+            }
+        }
+
+        function openAiModal() {
+            const popup = document.getElementById("fashu-ai-popup");
+            popup.style.display = "flex";
+            document.getElementById("fashu-ai-input").focus();
+        }
+
+        function sendQuickAiPrompt(text) {
+            document.getElementById("fashu-ai-input").value = text;
+            sendAiMessage();
+        }
+
+        function sendAiMessage() {
+            const input = document.getElementById("fashu-ai-input");
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatMessages = document.getElementById("fashu-ai-messages");
+
+            // Append User Message
+            chatMessages.innerHTML += `
+                <div style="text-align: right;">
+                    <div style="display: inline-block; padding: 8px 12px; border-radius: 12px 12px 2px 12px; background: #7c3aed; color: #fff; max-width: 85%; word-break: break-word; text-align: left;">
+                        ${escapeHtml(message)}
+                    </div>
+                </div>
+            `;
+            input.value = "";
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Indicator Loading
+            const loadingId = 'ai-loading-' + Date.now();
+            chatMessages.innerHTML += `
+                <div id="${loadingId}" style="text-align: left;">
+                    <div style="display: inline-block; padding: 8px 12px; border-radius: 12px 12px 12px 2px; background: #f1f5f9; color: #64748b; font-style: italic;">
+                        <i class="fa-solid fa-spinner fa-spin mr-1"></i> AI đang suy nghĩ...
+                    </div>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Gửi tới route AI backend hoặc Giả lập phản hồi AI thông minh
+            fetch("{{ route('ai.chat') ?? '/ai/chat' }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById(loadingId).remove();
+                appendAiResponse(data.reply || data.message || "Tôi đã nhận câu hỏi của bạn. Hãy tham khảo các dòng cá hiện có tại cửa hàng Fashu Aqua!");
+            })
+            .catch(() => {
+                // Fallback phản hồi giả lập nếu chưa có API backend
+                document.getElementById(loadingId).remove();
+                let fallbackReply = generateFallbackAiReply(message);
+                appendAiResponse(fallbackReply);
+            });
+        }
+
+        function appendAiResponse(replyText) {
+            const chatMessages = document.getElementById("fashu-ai-messages");
+            chatMessages.innerHTML += `
+                <div style="text-align: left;">
+                    <div style="display: inline-block; padding: 8px 12px; border-radius: 12px 12px 12px 2px; background: #e0e7ff; color: #1e1b4b; max-width: 90%; word-break: break-word; line-height: 1.4;">
+                        ${replyText}
+                    </div>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function generateFallbackAiReply(msg) {
+            const lower = msg.toLowerCase();
+            if (lower.includes('bể') || lower.includes('60cm') || lower.includes('kích thước')) {
+                return "✨ **Gợi ý cho bể 60cm**: Bạn có thể thả 15-20 cá Neon, 1 cặp cá Phượng Hoàng, 5 cá Chuột dọn bể và một số tép cảnh. Đừng quên trang bị lọc thác hoặc lọc thùng nhé!";
+            } else if (lower.includes('chung') || lower.includes('bảy màu') || lower.includes('ghép')) {
+                return "🐠 **Cá Bảy Màu (Guppy)** rất hiền lành! Bạn có thể nuôi chung với cá Sọc Ngựa, cá Mây Trắng, cá Mún, Tép Cảnh hoặc cá Trâm mà không lo bị cắn đuôi.";
+            } else if (lower.includes('đục') || lower.includes('nước') || lower.includes('vàng')) {
+                return "💧 **Xử lý nước đục**: 1. Thay 30% nước sạch. 2. Bổ sung vi sinh sống. 3. Giảm lượng thức ăn dư thừa và kiểm tra hệ thống lọc bọt/bông lọc.";
+            }
+            return "✨ AI Fashu khuyến nghị: Hãy chọn dòng cá phù hợp với thể tích bể và chỉ số nước pH từ 6.5 - 7.5 để cá luôn khỏe mạnh rực rỡ nhé!";
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        document.getElementById("fashu-ai-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") sendAiMessage();
+        });
+    </script>
+    <!-- ==================== END WIDGET AI ==================== -->
 
     @auth
         @if(Auth::user()->role === 'admin')
